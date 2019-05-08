@@ -51,5 +51,5 @@ lazy val shared = (project in file("shared"))
   )
 
 lazy val commonSettings = smlBuildSettings ++ Seq(
-
+  scalafmtOnCompile := true
 )
