@@ -1,7 +1,3 @@
 package sk.bsmk
 
-object AlphaApp extends App {
-
-
-
-}
+object AlphaApp extends App {}

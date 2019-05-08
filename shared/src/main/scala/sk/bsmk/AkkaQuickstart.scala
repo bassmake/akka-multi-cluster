@@ -1,7 +1,6 @@
 package sk.bsmk
 
-
-import akka.actor.{ Actor, ActorLogging, ActorRef, ActorSystem, Props }
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 
 object Greeter {
   def props(message: String, printerActor: ActorRef): Props = Props(new Greeter(message, printerActor))
@@ -15,10 +14,10 @@ class Greeter(message: String, printerActor: ActorRef) extends Actor {
 
   var greeting = ""
 
-  def receive = {
+  def receive: PartialFunction[Any, Unit] = {
     case WhoToGreet(who) =>
       greeting = message + ", " + who
-    case Greet           =>
+    case Greet =>
       printerActor ! Greeting(greeting)
   }
 }
@@ -31,7 +30,7 @@ object Printer {
 class Printer extends Actor with ActorLogging {
   import Printer._
 
-  def receive = {
+  def receive: PartialFunction[Any, Unit] = {
     case Greeting(greeting) =>
       log.info("Greeting received (from " + sender() + "): " + greeting)
   }

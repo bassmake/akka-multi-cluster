@@ -40,10 +40,10 @@ lazy val shared = (project in file("shared"))
     name := "shared",
     libraryDependencies ++= Seq(
       akkaActor,
-      akkaCluster,
-      akkaSlf4j,
-      scalaLogging,
-      logback,
+//      akkaCluster,
+//      akkaSlf4j,
+//      scalaLogging,
+//      logback,
 
       scalaTest % Test,
       akkaActorTestkit % Test

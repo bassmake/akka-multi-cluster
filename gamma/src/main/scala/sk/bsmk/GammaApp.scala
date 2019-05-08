@@ -1,5 +1,3 @@
 package sk.bsmk
 
-object GammaApp extends App {
-
-}
+object GammaApp extends App {}
