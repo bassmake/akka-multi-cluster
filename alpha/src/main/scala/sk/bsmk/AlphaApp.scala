@@ -1,4 +1,4 @@
-package sk.bsmk.hi
+package sk.bsmk
 
 object AlphaApp extends App {
 

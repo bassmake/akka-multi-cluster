@@ -1,4 +1,4 @@
-package sk.bsmk.hi
+package sk.bsmk
 
 object GammaApp extends App {
 
