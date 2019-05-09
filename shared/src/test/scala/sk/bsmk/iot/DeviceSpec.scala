@@ -2,10 +2,9 @@ package sk.bsmk.iot
 
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.scalatest.WordSpecLike
+import sk.bsmk.iot.Device.{RespondTemperature, TemperatureRecorded}
 
 class DeviceSpec extends ScalaTestWithActorTestKit with WordSpecLike {
-
-  import Device._
 
   "Device actor" must {
 
