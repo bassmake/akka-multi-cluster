@@ -10,7 +10,7 @@ lazy val `akka-multi-cluster` = (project in file("."))
   .settings(
     name := "akka-multi-cluster"
   )
-  .aggregate(alpha, beta, gamma, shared)
+  .aggregate(alpha, beta, gamma, shared, `iot-functional`, `iot-object-oriented`)
 
 
 lazy val alpha = (project in file("alpha"))
@@ -49,6 +49,31 @@ lazy val shared = (project in file("shared"))
       akkaActorTestkit % Test
     )
   )
+
+lazy val `iot-object-oriented` = (project in file("iot-object-oriented"))
+  .settings(
+    commonSettings,
+    name := "iot-object-oriented",
+    libraryDependencies ++= Seq(
+      akkaActor,
+
+      scalaTest % Test,
+      akkaActorTestkit % Test
+    )
+  )
+
+lazy val `iot-functional` = (project in file("iot-functional"))
+  .settings(
+    commonSettings,
+    name := "iot-functional",
+    libraryDependencies ++= Seq(
+      akkaActor,
+
+      scalaTest % Test,
+      akkaActorTestkit % Test
+    )
+  )
+
 
 lazy val smlBuildSettings =
   commonSmlBuildSettings    ++ // compiler flags

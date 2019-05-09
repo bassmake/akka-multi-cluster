@@ -3,7 +3,16 @@ package sk.bsmk.iot
 import akka.actor.typed.{ActorRef, Behavior, PostStop, Signal}
 import akka.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
 import sk.bsmk.iot.DeviceGroup.DeviceGroupMessage
-import sk.bsmk.iot.DeviceManager.{DeviceRegistered, ReplyDeviceList, RequestDeviceList, RequestTrackDevice}
+import sk.bsmk.iot.DeviceGroupQuery.DeviceGroupQueryMessage
+import sk.bsmk.iot.DeviceManager.{
+  DeviceManagerMessage,
+  DeviceRegistered,
+  ReplyDeviceList,
+  RequestDeviceList,
+  RequestTrackDevice
+}
+
+import scala.concurrent.duration._
 
 object DeviceGroup {
 
@@ -14,6 +23,19 @@ object DeviceGroup {
 
   final case class DeviceTerminated(device: ActorRef[Device.DeviceMessage], groupId: String, deviceId: String)
       extends DeviceGroupMessage
+
+  final case class RequestAllTemperatures(requestId: Long, groupId: String, replyTo: ActorRef[RespondAllTemperatures])
+      extends DeviceGroupQueryMessage
+      with DeviceGroupMessage
+      with DeviceManagerMessage
+
+  final case class RespondAllTemperatures(requestId: Long, temperatures: Map[String, TemperatureReading])
+
+  sealed trait TemperatureReading
+  final case class Temperature(value: Double) extends TemperatureReading
+  case object TemperatureNotAvailable extends TemperatureReading
+  case object DeviceNotAvailable extends TemperatureReading
+  case object DeviceTimedOut extends TemperatureReading
 
 }
 
@@ -55,6 +77,13 @@ class DeviceGroup(context: ActorContext[DeviceGroupMessage], groupId: String)
       context.log.info("Device actor for {} has been terminated", deviceId)
       deviceIdToActor -= deviceId
       this
+
+    case RequestAllTemperatures(requestId, gId, replyTo) =>
+      if (gId == groupId) {
+        context.spawnAnonymous(DeviceGroupQuery(deviceIdToActor, requestId = requestId, requester = replyTo, 3.seconds))
+        this
+      } else
+        Behaviors.unhandled
 
   }
 
