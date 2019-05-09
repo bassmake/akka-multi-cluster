@@ -3,6 +3,7 @@ package sk.bsmk.iot
 import akka.actor.typed.{ActorRef, Behavior, PostStop, Signal}
 import akka.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
 import sk.bsmk.iot.DeviceGroup.DeviceGroupMessage
+import sk.bsmk.iot.DeviceManager.{DeviceRegistered, ReplyDeviceList, RequestDeviceList, RequestTrackDevice}
 
 object DeviceGroup {
 
@@ -11,13 +12,8 @@ object DeviceGroup {
 
   trait DeviceGroupMessage
 
-  final case class RequestTrackDevice(groupId: String, deviceId: String, replyTo: ActorRef[DeviceRegistered])
+  final case class DeviceTerminated(device: ActorRef[Device.DeviceMessage], groupId: String, deviceId: String)
       extends DeviceGroupMessage
-
-  private final case class DeviceTerminated(device: ActorRef[Device.DeviceMessage], groupId: String, deviceId: String)
-      extends DeviceGroupMessage
-
-  final case class DeviceRegistered(device: ActorRef[Device.DeviceMessage]) extends DeviceGroupMessage
 
 }
 
@@ -38,6 +34,7 @@ class DeviceGroup(context: ActorContext[DeviceGroupMessage], groupId: String)
         case None =>
           context.log.info("Creating device actor for {}", trackMsg.deviceId)
           val deviceActor = context.spawn(Device(groupId, deviceId), s"device-$deviceId")
+          context.watchWith(deviceActor, DeviceTerminated(deviceActor, groupId, deviceId))
           deviceIdToActor += deviceId -> deviceActor
           replyTo ! DeviceRegistered(deviceActor)
       }
@@ -45,6 +42,18 @@ class DeviceGroup(context: ActorContext[DeviceGroupMessage], groupId: String)
 
     case RequestTrackDevice(gId, _, _) =>
       context.log.warning("Ignoring TrackDevice request for {}. This actor is responsible for {}.", gId, groupId)
+      this
+
+    case RequestDeviceList(requestId, gId, replyTo) =>
+      if (gId == groupId) {
+        replyTo ! ReplyDeviceList(requestId, deviceIdToActor.keySet)
+        this
+      } else
+        Behaviors.unhandled
+
+    case DeviceTerminated(_, _, deviceId) =>
+      context.log.info("Device actor for {} has been terminated", deviceId)
+      deviceIdToActor -= deviceId
       this
 
   }

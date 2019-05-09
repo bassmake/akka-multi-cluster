@@ -16,6 +16,8 @@ object Device {
 
   final case class ReadTemperature(requestId: Long, replyTo: ActorRef[RespondTemperature]) extends DeviceMessage
   final case class RespondTemperature(requestId: Long, value: Option[Double])
+
+  case object Passivate extends DeviceMessage
 }
 
 class Device(context: ActorContext[Device.DeviceMessage], groupId: String, deviceId: String)
@@ -38,6 +40,9 @@ class Device(context: ActorContext[Device.DeviceMessage], groupId: String, devic
       case ReadTemperature(id, replyTo) =>
         replyTo ! RespondTemperature(id, lastTemperatureReading)
         this
+
+      case Passivate =>
+        Behaviors.stopped
     }
   }
 

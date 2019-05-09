@@ -50,6 +50,20 @@ lazy val shared = (project in file("shared"))
     )
   )
 
-lazy val commonSettings = smlBuildSettings ++ Seq(
+lazy val smlBuildSettings =
+  commonSmlBuildSettings    ++ // compiler flags
+    splainSettings            ++ // gives rich output on implicit resolution errors
+    dependencyUpdatesSettings ++ // check dependency updates on startup (max once per 12h)
+    wartRemoverSettings       ++ // warts
+    acyclicSettings           ++ // check circular dependencies between packages
+    ossPublishSettings
+
+lazy val commonSettings =
+  commonSmlBuildSettings    ++ // compiler flags
+    splainSettings            ++ // gives rich output on implicit resolution errors 
+    dependencyUpdatesSettings ++ // check dependency updates on startup (max once per 12h)
+//    wartRemoverSettings       ++ // warts
+//    acyclicSettings           ++ // check circular dependencies between packages
+    ossPublishSettings ++ Seq(
   scalafmtOnCompile := true
 )
