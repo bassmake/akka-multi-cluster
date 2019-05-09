@@ -3,13 +3,7 @@ package sk.bsmk.iot
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.scalatest.WordSpecLike
 import sk.bsmk.iot.Device.DeviceMessage
-import sk.bsmk.iot.DeviceGroup.{
-  DeviceNotAvailable,
-  DeviceTimedOut,
-  RespondAllTemperatures,
-  Temperature,
-  TemperatureNotAvailable
-}
+import sk.bsmk.iot.DeviceGroup._
 import sk.bsmk.iot.DeviceGroupQuery.WrappedRespondTemperature
 
 import scala.concurrent.duration._
