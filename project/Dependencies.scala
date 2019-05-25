@@ -10,6 +10,7 @@ object Dependencies {
 
 
     val scalaTestVersion = "3.0.5"
+    val pegdownVersion = "1.6.0"
   }
 
   import Version._
@@ -21,7 +22,8 @@ object Dependencies {
   val scalaLogging = "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion
   val logback =  "ch.qos.logback" % "logback-classic" % logbackVersion
 
-  val scalaTest = "org.scalatest" % "scalatest_2.12" % scalaTestVersion
+  val scalaTest = "org.scalatest" %% "scalatest" % scalaTestVersion
+  val pegdown = "org.pegdown" % "pegdown" % pegdownVersion
   val akkaActorTestkit  = "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion
   
 }

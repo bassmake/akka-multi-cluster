@@ -7,10 +7,12 @@ ThisBuild / scalaVersion := "2.12.8"
 lazy val CompileTest = "compile->compile;test->test"
 
 lazy val `akka-multi-cluster` = (project in file("."))
+  .enablePlugins(ParadoxPlugin)
   .settings(
-    name := "akka-multi-cluster"
+    name := "akka-multi-cluster",
+    paradoxTheme := Some(builtinParadoxTheme("generic"))
   )
-  .aggregate(alpha, beta, gamma, shared, `iot-functional`, `iot-object-oriented`)
+  .aggregate(alpha, beta, gamma, shared)
 
 
 lazy val alpha = (project in file("alpha"))
@@ -46,42 +48,10 @@ lazy val shared = (project in file("shared"))
 //      logback,
 
       scalaTest % Test,
+      pegdown % Test,
       akkaActorTestkit % Test
     )
   )
-
-lazy val `iot-object-oriented` = (project in file("iot-object-oriented"))
-  .settings(
-    commonSettings,
-    name := "iot-object-oriented",
-    libraryDependencies ++= Seq(
-      akkaActor,
-
-      scalaTest % Test,
-      akkaActorTestkit % Test
-    )
-  )
-
-lazy val `iot-functional` = (project in file("iot-functional"))
-  .settings(
-    commonSettings,
-    name := "iot-functional",
-    libraryDependencies ++= Seq(
-      akkaActor,
-
-      scalaTest % Test,
-      akkaActorTestkit % Test
-    )
-  )
-
-
-lazy val smlBuildSettings =
-  commonSmlBuildSettings    ++ // compiler flags
-    splainSettings            ++ // gives rich output on implicit resolution errors
-    dependencyUpdatesSettings ++ // check dependency updates on startup (max once per 12h)
-    wartRemoverSettings       ++ // warts
-    acyclicSettings           ++ // check circular dependencies between packages
-    ossPublishSettings
 
 lazy val commonSettings =
   commonSmlBuildSettings    ++ // compiler flags
@@ -90,5 +60,11 @@ lazy val commonSettings =
 //    wartRemoverSettings       ++ // warts
 //    acyclicSettings           ++ // check circular dependencies between packages
     ossPublishSettings ++ Seq(
-  scalafmtOnCompile := true
+  scalafmtOnCompile := true,
+    Test / fork := true,
+    Test / logBuffered := false,
+    Test / testOptions ++= Seq(
+      Tests.Argument(TestFrameworks.ScalaTest, "-h", s"${baseDirectory.value}/target/test-html-report"),
+      Tests.Argument(TestFrameworks.ScalaTest, "-o")
+    )
 )
